@@ -1,12 +1,28 @@
-
+import { useEffect, useState } from "react"
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import { Trophy, Star } from "lucide-react"
 
 import { Link } from "react-router-dom"
 
-export default function AllResults() {
+interface Result {
+  _id?: string
+  name: string
+  className: string
+  rank: string
+  percentage: string
+  imageUrl: string
+}
 
+export default function AllResults() {
+const [results, setResults] = useState<Result[]>([])
+useEffect(() => {
+
+  fetch("https://coaching-backend.onrender.com/api/results")
+    .then(res => res.json())
+    .then(data => setResults(data))
+
+}, [])
   return (
     <>
       <Navbar />
@@ -48,10 +64,10 @@ export default function AllResults() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
 
-            {[...Array(12)].map((_, i) => (
+            {results.map((student:Result, i:number)  => (
 
               <div
-                key={i}
+                key={student._id || i}
                 className="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition hover:-translate-y-1 text-center p-5 border border-gray-100"
               >
 
@@ -61,16 +77,16 @@ export default function AllResults() {
                 </div>
 
                 <img
-                  src={`https://randomuser.me/api/portraits/${i % 2 ? "women" : "men"}/${20 + i}.jpg`}
+                  src={student.imageUrl}
                   className="w-20 h-20 mx-auto rounded-full mb-3 shadow"
                 />
 
                 <h3 className="font-semibold text-gray-800">
-                  Student {i + 1}
+                  {student.name}
                 </h3>
 
                 <p className="text-2xl font-bold text-blue-900 mb-1">
-                  {95 + (i % 5)}%
+                  {student.percentage}%
                 </p>
 
                 <div className="flex justify-center">

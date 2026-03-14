@@ -360,6 +360,7 @@
 import { useState } from "react"
 import AdminLayout from "../components/AdminLayout"
 import { Eye, Pencil, Trash, Upload } from "lucide-react"
+import { useEffect } from "react"
 
 interface Result {
   name: string
@@ -407,43 +408,43 @@ export default function ResultsManager() {
 
   }
 
-  const addResult = () => {
+  const addResult = async () => {
 
-    if (!form.name || !form.percentage || !form.className) return
+  if (!form.name || !form.percentage || !form.className) return
 
-    if (editIndex !== null) {
+  try {
 
-      const updated = [...results]
-      updated[editIndex] = form
-      setResults(updated)
-      setEditIndex(null)
+    const res = await fetch(
+      "https://coaching-backend.onrender.com/api/results",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(form)
+      }
+    )
 
-    } else {
+    const data = await res.json()
 
-      const updated = [...results, form]
+    setResults([...results, data])
 
-      updated.sort((a, b) => {
-        if (a.className === b.className) {
-          return Number(a.rank) - Number(b.rank)
-        }
-        return a.className.localeCompare(b.className)
-      })
+  } catch (error) {
 
-      setResults(updated)
-
-    }
-
-    setForm({
-      name: "",
-      className: "",
-      rank: "",
-      percentage: "",
-      imageUrl: ""
-    })
-
-    setPreview("")
+    console.error("Error saving result:", error)
 
   }
+
+  setForm({
+    name: "",
+    className: "",
+    rank: "",
+    percentage: "",
+    imageUrl: ""
+  })
+
+  setPreview("")
+}
 
   const deleteResult = (index: number) => {
     const updated = results.filter((_, i) => i !== index)
@@ -473,6 +474,14 @@ Percentage: ${result.percentage}%`
     },
     {}
   )
+  useEffect(() => {
+
+  fetch("https://coaching-backend.onrender.com/api/results")
+    .then(res => res.json())
+    .then(data => setResults(data))
+    .catch(err => console.error(err))
+
+}, [])
 
   return (
     <AdminLayout>
