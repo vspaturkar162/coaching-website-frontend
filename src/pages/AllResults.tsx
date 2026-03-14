@@ -16,12 +16,18 @@ interface Result {
 
 export default function AllResults() {
 const [results, setResults] = useState<Result[]>([])
-useEffect(() => {
+const tenthResults = results.filter(
+  r => r.className.toLowerCase().includes("10")
+)
 
+const twelfthResults = results.filter(
+  r => r.className.toLowerCase().includes("12")
+)
+useEffect(() => {
   fetch("https://coaching-backend.onrender.com/api/results")
     .then(res => res.json())
     .then(data => setResults(data))
-
+    .catch(err => console.error("Error loading results:", err))
 }, [])
   return (
     <>
@@ -64,7 +70,7 @@ useEffect(() => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
 
-            {results.map((student:Result, i:number)  => (
+            {tenthResults.map((student:Result, i:number)  => (
 
               <div
                 key={student._id || i}
@@ -130,7 +136,7 @@ useEffect(() => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
 
-            {[...Array(12)].map((_, i) => (
+            {twelfthResults.map((student:Result, i:number) => (
 
               <div
                 key={i}
@@ -142,16 +148,16 @@ useEffect(() => {
                 </div>
 
                 <img
-                  src={`https://randomuser.me/api/portraits/${i % 2 ? "women" : "men"}/${40 + i}.jpg`}
+                  src={student.imageUrl}
                   className="w-20 h-20 mx-auto rounded-full mb-3 shadow"
                 />
 
                 <h3 className="font-semibold text-gray-800">
-                  Student {i + 1}
+                  {student.name}
                 </h3>
 
                 <p className="text-2xl font-bold text-blue-900 mb-1">
-                  {94 + (i % 5)}%
+                  {student.percentage}%
                 </p>
 
                 <div className="flex justify-center">
