@@ -14,7 +14,7 @@ export default function Hero() {
   const [hero, setHero] = useState<HeroData | null>(null)
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/hero")
+    fetch("https://coaching-backend.onrender.com/api/hero")
       .then(res => res.json())
       .then(data => setHero(data))
   }, [])
