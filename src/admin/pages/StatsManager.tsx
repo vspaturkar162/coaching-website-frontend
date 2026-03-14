@@ -1,3 +1,4 @@
+
 // import { useState } from "react"
 // import AdminLayout from "../components/AdminLayout"
 // import { Users, Trophy, BookOpen, GraduationCap } from "lucide-react"
@@ -28,7 +29,6 @@
 //     setStats({ ...stats, [e.target.name]: e.target.value })
 //   }
 
-//   // Auto success rate calculator
 //   const calculateSuccessRate = () => {
 //     if (!stats.students || !stats.selections) return
 
@@ -40,24 +40,48 @@
 //       successRate: rate.toFixed(1)
 //     })
 //   }
+//   const saveStats = async () => {
+
+//   try {
+
+//     await fetch(
+//       "https://coaching-backend.onrender.com/api/stats",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json"
+//         },
+//         body: JSON.stringify(stats)
+//       }
+//     )
+
+//     alert("Statistics saved successfully")
+
+//   } catch (error) {
+
+//     console.error(error)
+
+//   }
+
+// }
 
 //   return (
 //     <AdminLayout>
 
 //       {/* Header */}
 //       <div>
-//         <h1 className="text-3xl font-bold text-gray-800">
+//         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
 //           Impact Statistics Manager
 //         </h1>
-//         <p className="text-gray-500">
+//         <p className="text-gray-500 text-sm sm:text-base">
 //           Update the key achievements and numbers displayed on your website.
 //         </p>
 //       </div>
 
 //       {/* Form Panel */}
-//       <div className=" rounded-xl shadow p-8 mt-6">
+//       <div className="rounded-xl shadow p-6 sm:p-8 mt-6">
 
-//         <div className="grid grid-cols-3 gap-6">
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
 //           <div>
 //             <label className="text-sm text-gray-600 font-medium">
@@ -136,6 +160,7 @@
 //               className="mt-2 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
 //             />
 //           </div>
+
 //           <div>
 //             <label className="text-sm text-gray-600 font-medium">
 //               Success Rate (%)
@@ -152,16 +177,18 @@
 //         </div>
 
 //         {/* Calculator */}
-//         <div className="mt-6 flex gap-4">
+//         <div className="mt-6 flex flex-col sm:flex-row gap-4">
 
 //           <button
 //             onClick={calculateSuccessRate}
-//             className="bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg"
+//             className="bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg w-full sm:w-auto"
 //           >
 //             Calculate Success Rate
 //           </button>
 
-//           <button className="bg-gradient-to-r from-green-600 via-teal-500 to-green-800 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+//           <button 
+//           onClick={saveStats}
+//           className="bg-gradient-to-r from-green-600 via-teal-500 to-green-800 hover:bg-blue-700 text-white px-6 py-2 rounded-lg w-full sm:w-auto">
 //             Save Statistics
 //           </button>
 
@@ -171,7 +198,7 @@
 
 
 //       {/* Preview Section */}
-//       <div className="grid grid-cols-4 gap-6 mt-8">
+//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
 
 //         <div className="bg-gradient-to-r from-blue-100 via-blue-200 to-sky-50 p-6 rounded-xl shadow text-center">
 //           <Users className="mx-auto text-blue-600 mb-2"/>
@@ -203,9 +230,12 @@
 //   )
 // }
 
-import { useState } from "react"
+
+import { useState, useEffect } from "react"
 import AdminLayout from "../components/AdminLayout"
 import { Users, Trophy, BookOpen, GraduationCap } from "lucide-react"
+
+const API = "https://coaching-website-backend-0nk3.onrender.com/api/stats"
 
 interface StatsData {
   students: string
@@ -217,17 +247,38 @@ interface StatsData {
   faculty: string
 }
 
-export default function StatsManager() {
+const emptyStats: StatsData = {
+  students: "",
+  selections: "",
+  experience: "",
+  successRate: "",
+  courses: "",
+  batches: "",
+  faculty: ""
+}
 
-  const [stats, setStats] = useState<StatsData>({
-    students: "",
-    selections: "",
-    experience: "",
-    successRate: "",
-    courses: "",
-    batches: "",
-    faculty: ""
-  })
+export default function StatsManager() {
+  const [stats, setStats] = useState<StatsData>(emptyStats)
+
+  // Load existing stats into form on mount
+  useEffect(() => {
+    fetch(API)
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setStats({
+            students: data.students || "",
+            selections: data.selections || "",
+            experience: data.experience || "",
+            successRate: data.successRate || "",
+            courses: data.courses || "",
+            batches: data.batches || "",
+            faculty: data.faculty || ""
+          })
+        }
+      })
+      .catch(err => console.error("Error loading stats:", err))
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setStats({ ...stats, [e.target.name]: e.target.value })
@@ -235,39 +286,25 @@ export default function StatsManager() {
 
   const calculateSuccessRate = () => {
     if (!stats.students || !stats.selections) return
-
-    const rate =
-      (Number(stats.selections) / Number(stats.students)) * 100
-
-    setStats({
-      ...stats,
-      successRate: rate.toFixed(1)
-    })
+    const rate = (Number(stats.selections) / Number(stats.students)) * 100
+    setStats({ ...stats, successRate: rate.toFixed(1) })
   }
+
   const saveStats = async () => {
-
-  try {
-
-    await fetch(
-      "https://coaching-backend.onrender.com/api/stats",
-      {
+    try {
+      const res = await fetch(API, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(stats)
-      }
-    )
+      })
 
-    alert("Statistics saved successfully")
-
-  } catch (error) {
-
-    console.error(error)
-
+      if (!res.ok) throw new Error("Failed to save")
+      alert("Statistics saved successfully!")
+    } catch (error) {
+      console.error("Error saving stats:", error)
+      alert("Failed to save. Please try again.")
+    }
   }
-
-}
 
   return (
     <AdminLayout>
@@ -284,13 +321,10 @@ export default function StatsManager() {
 
       {/* Form Panel */}
       <div className="rounded-xl shadow p-6 sm:p-8 mt-6">
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
           <div>
-            <label className="text-sm text-gray-600 font-medium">
-              Total Students
-            </label>
+            <label className="text-sm text-gray-600 font-medium">Total Students</label>
             <input
               name="students"
               value={stats.students}
@@ -301,9 +335,7 @@ export default function StatsManager() {
           </div>
 
           <div>
-            <label className="text-sm text-gray-600 font-medium">
-              Top Selections
-            </label>
+            <label className="text-sm text-gray-600 font-medium">Top Selections</label>
             <input
               name="selections"
               value={stats.selections}
@@ -314,9 +346,7 @@ export default function StatsManager() {
           </div>
 
           <div>
-            <label className="text-sm text-gray-600 font-medium">
-              Years of Experience
-            </label>
+            <label className="text-sm text-gray-600 font-medium">Years of Experience</label>
             <input
               name="experience"
               value={stats.experience}
@@ -327,9 +357,7 @@ export default function StatsManager() {
           </div>
 
           <div>
-            <label className="text-sm text-gray-600 font-medium">
-              Total Courses
-            </label>
+            <label className="text-sm text-gray-600 font-medium">Total Courses</label>
             <input
               name="courses"
               value={stats.courses}
@@ -340,9 +368,7 @@ export default function StatsManager() {
           </div>
 
           <div>
-            <label className="text-sm text-gray-600 font-medium">
-              Active Batches
-            </label>
+            <label className="text-sm text-gray-600 font-medium">Active Batches</label>
             <input
               name="batches"
               value={stats.batches}
@@ -353,9 +379,7 @@ export default function StatsManager() {
           </div>
 
           <div>
-            <label className="text-sm text-gray-600 font-medium">
-              Faculty Members
-            </label>
+            <label className="text-sm text-gray-600 font-medium">Faculty Members</label>
             <input
               name="faculty"
               value={stats.faculty}
@@ -366,9 +390,7 @@ export default function StatsManager() {
           </div>
 
           <div>
-            <label className="text-sm text-gray-600 font-medium">
-              Success Rate (%)
-            </label>
+            <label className="text-sm text-gray-600 font-medium">Success Rate (%)</label>
             <input
               name="successRate"
               value={stats.successRate}
@@ -380,9 +402,8 @@ export default function StatsManager() {
 
         </div>
 
-        {/* Calculator */}
+        {/* Buttons */}
         <div className="mt-6 flex flex-col sm:flex-row gap-4">
-
           <button
             onClick={calculateSuccessRate}
             className="bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg w-full sm:w-auto"
@@ -390,40 +411,38 @@ export default function StatsManager() {
             Calculate Success Rate
           </button>
 
-          <button 
-          onClick={saveStats}
-          className="bg-gradient-to-r from-green-600 via-teal-500 to-green-800 hover:bg-blue-700 text-white px-6 py-2 rounded-lg w-full sm:w-auto">
+          <button
+            onClick={saveStats}
+            className="bg-gradient-to-r from-green-600 via-teal-500 to-green-800 hover:bg-blue-700 text-white px-6 py-2 rounded-lg w-full sm:w-auto"
+          >
             Save Statistics
           </button>
-
         </div>
-
       </div>
-
 
       {/* Preview Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
 
         <div className="bg-gradient-to-r from-blue-100 via-blue-200 to-sky-50 p-6 rounded-xl shadow text-center">
-          <Users className="mx-auto text-blue-600 mb-2"/>
+          <Users className="mx-auto text-blue-600 mb-2" />
           <p className="text-2xl font-bold">{stats.students || "0"}+</p>
           <p className="text-gray-500 text-sm">Students</p>
         </div>
 
         <div className="bg-gradient-to-r from-blue-100 via-blue-200 to-sky-50 p-6 rounded-xl shadow text-center">
-          <Trophy className="mx-auto text-blue-600 mb-2"/>
+          <Trophy className="mx-auto text-blue-600 mb-2" />
           <p className="text-2xl font-bold">{stats.selections || "0"}+</p>
           <p className="text-gray-500 text-sm">Selections</p>
         </div>
 
         <div className="bg-gradient-to-r from-blue-100 via-blue-200 to-sky-50 p-6 rounded-xl shadow text-center">
-          <GraduationCap className="mx-auto text-blue-600 mb-2"/>
+          <GraduationCap className="mx-auto text-blue-600 mb-2" />
           <p className="text-2xl font-bold">{stats.courses || "0"}</p>
           <p className="text-gray-500 text-sm">Courses</p>
         </div>
 
         <div className="bg-gradient-to-r from-blue-100 via-blue-200 to-sky-50 p-6 rounded-xl shadow text-center">
-          <BookOpen className="mx-auto text-blue-600 mb-2"/>
+          <BookOpen className="mx-auto text-blue-600 mb-2" />
           <p className="text-2xl font-bold">{stats.successRate || "0"}%</p>
           <p className="text-gray-500 text-sm">Success Rate</p>
         </div>
