@@ -1,3 +1,4 @@
+
 // import { useState } from "react"
 // import AdminLayout from "../components/AdminLayout"
 // import {
@@ -78,23 +79,23 @@
 
 //       {/* HEADER */}
 //       <div className="bg-gradient-to-r from-white to-blue-100 p-4 rounded-lg">
-//         <h1 className="text-3xl font-bold text-gray-800">
+//         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
 //           Demo Lectures Manager
 //         </h1>
-//         <p className="text-gray-500">
+//         <p className="text-gray-500 text-sm sm:text-base">
 //           Upload and manage demo lectures for each subject.
 //         </p>
 //       </div>
 
 
 //       {/* ADD LECTURE FORM */}
-//       <div className=" rounded-xl shadow p-8 mt-6">
+//       <div className="rounded-xl shadow p-6 sm:p-8 mt-6">
 
 //         <h2 className="text-lg font-semibold mb-6">
 //           Add Demo Lecture
 //         </h2>
 
-//         <div className="grid grid-cols-2 gap-6">
+//         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
 //           <input
 //             name="title"
@@ -133,7 +134,7 @@
 //             value={form.videoUrl}
 //             onChange={handleChange}
 //             placeholder="YouTube Video URL"
-//             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none col-span-2"
+//             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none sm:col-span-2"
 //           />
 
 //         </div>
@@ -174,7 +175,7 @@
 
 //             <img
 //               src={preview}
-//               className="h-24 rounded-lg shadow"
+//               className="h-24 w-auto rounded-lg shadow object-contain"
 //             />
 
 //           </div>
@@ -184,7 +185,7 @@
 //         {/* BUTTON */}
 //         <button
 //           onClick={addLecture}
-//           className="mt-6 bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 text-white px-6 py-2 rounded-lg"
+//           className="mt-6 bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 text-white px-6 py-2 rounded-lg w-full sm:w-auto"
 //         >
 //           Add Lecture
 //         </button>
@@ -194,7 +195,7 @@
 
 
 //       {/* SUBJECT FOLDERS */}
-//       <div className=" rounded-xl shadow p-8 mt-8">
+//       <div className="rounded-xl shadow p-6 sm:p-8 mt-8">
 
 //         <h2 className="bg-gradient-to-r from-white to-blue-100 text-lg font-semibold mb-6">
 //           Demo Lecture Library
@@ -218,7 +219,7 @@
 
 //             </div>
 
-//             <div className="grid grid-cols-3 gap-6">
+//             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
 //               {lectures
 //                 .filter(l => l.subject === subject)
@@ -287,16 +288,15 @@
 // }
 
 
-import { useState } from "react"
+
+import { useState, useEffect } from "react"
 import AdminLayout from "../components/AdminLayout"
-import {
-  Upload,
-  Eye,
-  Trash,
-  Folder
-} from "lucide-react"
+import { Upload, Eye, Trash, Folder } from "lucide-react"
+
+const API = "https://coaching-website-backend-0nk3.onrender.com/api/demo-lectures"
 
 interface Lecture {
+  _id?: string
   title: string
   subject: string
   teacher: string
@@ -305,59 +305,66 @@ interface Lecture {
   thumbnail: string
 }
 
+const emptyForm: Lecture = {
+  title: "",
+  subject: "",
+  teacher: "",
+  className: "",
+  videoUrl: "",
+  thumbnail: ""
+}
+
 export default function DemoLecturesManager() {
-
   const [lectures, setLectures] = useState<Lecture[]>([])
-
-  const [form, setForm] = useState<Lecture>({
-    title: "",
-    subject: "",
-    teacher: "",
-    className: "",
-    videoUrl: "",
-    thumbnail: ""
-  })
-
+  const [form, setForm] = useState<Lecture>(emptyForm)
   const [preview, setPreview] = useState("")
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  // Load existing lectures on mount
+  useEffect(() => {
+    fetch(API)
+      .then(res => res.json())
+      .then(data => setLectures(data))
+      .catch(err => console.error("Error loading lectures:", err))
+  }, [])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleThumbnailUpload = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return
-
-    const file = e.target.files[0]
-    const url = URL.createObjectURL(file)
-
+    const url = URL.createObjectURL(e.target.files[0])
     setForm({ ...form, thumbnail: url })
     setPreview(url)
   }
 
-  const addLecture = () => {
-
+  const addLecture = async () => {
     if (!form.title || !form.subject) return
 
-    setLectures([...lectures, form])
+    try {
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form)
+      })
+      const data = await res.json()
+      setLectures(prev => [...prev, data])
+    } catch (err) {
+      console.error("Error adding lecture:", err)
+    }
 
-    setForm({
-      title: "",
-      subject: "",
-      teacher: "",
-      className: "",
-      videoUrl: "",
-      thumbnail: ""
-    })
-
+    setForm(emptyForm)
     setPreview("")
   }
 
-  const deleteLecture = (index: number) => {
-    setLectures(lectures.filter((_, i) => i !== index))
+  const deleteLecture = async (lecture: Lecture) => {
+    if (!lecture._id) return
+    try {
+      await fetch(`${API}/${lecture._id}`, { method: "DELETE" })
+      setLectures(prev => prev.filter(l => l._id !== lecture._id))
+    } catch (err) {
+      console.error("Error deleting lecture:", err)
+    }
   }
 
   const subjects = [...new Set(lectures.map(l => l.subject))]
@@ -375,16 +382,11 @@ export default function DemoLecturesManager() {
         </p>
       </div>
 
-
       {/* ADD LECTURE FORM */}
       <div className="rounded-xl shadow p-6 sm:p-8 mt-6">
-
-        <h2 className="text-lg font-semibold mb-6">
-          Add Demo Lecture
-        </h2>
+        <h2 className="text-lg font-semibold mb-6">Add Demo Lecture</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
           <input
             name="title"
             value={form.title}
@@ -424,51 +426,29 @@ export default function DemoLecturesManager() {
             placeholder="YouTube Video URL"
             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none sm:col-span-2"
           />
-
         </div>
-
 
         {/* THUMBNAIL UPLOAD */}
         <div className="mt-6">
-
           <label className="text-sm font-medium text-gray-600">
             Upload Thumbnail
           </label>
-
           <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg h-24 mt-2 cursor-pointer hover:border-blue-500">
-
             <div className="flex items-center gap-2 text-gray-500">
-              <Upload size={18}/>
+              <Upload size={18} />
               Upload Thumbnail
             </div>
-
-            <input
-              type="file"
-              className="hidden"
-              onChange={handleThumbnailUpload}
-            />
-
+            <input type="file" className="hidden" onChange={handleThumbnailUpload} />
           </label>
-
         </div>
-
 
         {/* PREVIEW */}
         {preview && (
           <div className="mt-6">
-
-            <p className="text-sm text-gray-600 mb-2">
-              Thumbnail Preview
-            </p>
-
-            <img
-              src={preview}
-              className="h-24 w-auto rounded-lg shadow object-contain"
-            />
-
+            <p className="text-sm text-gray-600 mb-2">Thumbnail Preview</p>
+            <img src={preview} className="h-24 w-auto rounded-lg shadow object-contain" />
           </div>
         )}
-
 
         {/* BUTTON */}
         <button
@@ -477,98 +457,68 @@ export default function DemoLecturesManager() {
         >
           Add Lecture
         </button>
-
       </div>
-
-
 
       {/* SUBJECT FOLDERS */}
       <div className="rounded-xl shadow p-6 sm:p-8 mt-8">
-
         <h2 className="bg-gradient-to-r from-white to-blue-100 text-lg font-semibold mb-6">
           Demo Lecture Library
         </h2>
 
         {subjects.length === 0 && (
-          <p className="text-gray-400">
-            No lectures added yet.
-          </p>
+          <p className="text-gray-400">No lectures added yet.</p>
         )}
 
-        {subjects.map((subject, i) => (
-
-          <div key={i} className="mb-8">
+        {subjects.map((subject) => (
+          <div key={subject} className="mb-8">
 
             {/* SUBJECT HEADER */}
             <div className="flex items-center gap-2 mb-4 text-blue-700 font-semibold">
-
-              <Folder size={20}/>
+              <Folder size={20} />
               {subject}
-
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
               {lectures
                 .filter(l => l.subject === subject)
-                .map((lecture, index) => (
-
-                <div
-                  key={index}
-                  className="border rounded-xl overflow-hidden shadow hover:shadow-lg transition"
-                >
-
-                  {lecture.thumbnail && (
-                    <img
-                      src={lecture.thumbnail}
-                      className="h-36 w-full object-cover"
-                    />
-                  )}
-
-                  <div className="p-4">
-
-                    <h3 className="font-semibold">
-                      {lecture.title}
-                    </h3>
-
-                    <p className="text-sm text-gray-500">
-                      {lecture.teacher}
-                    </p>
-
-                    <p className="text-sm text-gray-400">
-                      Class {lecture.className}
-                    </p>
-
-                    <div className="flex gap-3 mt-3">
-
-                      <a
-                        href={lecture.videoUrl}
-                        target="_blank"
-                        className="text-blue-600"
-                      >
-                        <Eye size={18}/>
-                      </a>
-
-                      <Trash
-                        size={18}
-                        className="text-red-600 cursor-pointer"
-                        onClick={() => deleteLecture(index)}
+                .map((lecture) => (
+                  <div
+                    key={lecture._id}
+                    className="border rounded-xl overflow-hidden shadow hover:shadow-lg transition"
+                  >
+                    {lecture.thumbnail && (
+                      <img
+                        src={lecture.thumbnail}
+                        className="h-36 w-full object-cover"
                       />
+                    )}
 
+                    <div className="p-4">
+                      <h3 className="font-semibold">{lecture.title}</h3>
+                      <p className="text-sm text-gray-500">{lecture.teacher}</p>
+                      <p className="text-sm text-gray-400">Class {lecture.className}</p>
+
+                      <div className="flex gap-3 mt-3">
+                        <a
+                          href={lecture.videoUrl}
+                          target="_blank"
+                          className="text-blue-600"
+                        >
+                          <Eye size={18} />
+                        </a>
+
+                        <Trash
+                          size={18}
+                          className="text-red-600 cursor-pointer"
+                          onClick={() => deleteLecture(lecture)}
+                        />
+                      </div>
                     </div>
-
                   </div>
-
-                </div>
-
-              ))}
-
+                ))}
             </div>
-
           </div>
-
         ))}
-
       </div>
 
     </AdminLayout>
