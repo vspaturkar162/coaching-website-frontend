@@ -242,7 +242,7 @@ export default function HeroManager() {
     })
   }
   const saveHero = async () => {
-  await fetch("http://localhost:5000/api/hero", {
+  await fetch("https://coaching-backend.onrender.com/api/hero", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
