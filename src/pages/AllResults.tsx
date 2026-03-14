@@ -24,7 +24,7 @@ const twelfthResults = results.filter(
   r => r.className.toLowerCase().includes("12")
 )
 useEffect(() => {
-  fetch("https://coaching-backend.onrender.com/api/results")
+  fetch("https://coaching-website-backend-0nk3.onrender.com/api/results")
     .then(res => res.json())
     .then(data => setResults(data))
     .catch(err => console.error("Error loading results:", err))
