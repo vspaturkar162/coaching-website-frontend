@@ -244,6 +244,30 @@ export default function StatsManager() {
       successRate: rate.toFixed(1)
     })
   }
+  const saveStats = async () => {
+
+  try {
+
+    await fetch(
+      "https://coaching-backend.onrender.com/api/stats",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(stats)
+      }
+    )
+
+    alert("Statistics saved successfully")
+
+  } catch (error) {
+
+    console.error(error)
+
+  }
+
+}
 
   return (
     <AdminLayout>
@@ -366,7 +390,9 @@ export default function StatsManager() {
             Calculate Success Rate
           </button>
 
-          <button className="bg-gradient-to-r from-green-600 via-teal-500 to-green-800 hover:bg-blue-700 text-white px-6 py-2 rounded-lg w-full sm:w-auto">
+          <button 
+          onClick={saveStats}
+          className="bg-gradient-to-r from-green-600 via-teal-500 to-green-800 hover:bg-blue-700 text-white px-6 py-2 rounded-lg w-full sm:w-auto">
             Save Statistics
           </button>
 

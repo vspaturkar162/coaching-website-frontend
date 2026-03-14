@@ -48,22 +48,30 @@ export default function TestimonialsManager() {
     setPreview(url)
   }
 
-  const addTestimonial = () => {
+  const addTestimonial = async () => {
 
-    if (!form.studentName || !form.videoUrl) return
+  if (!form.studentName || !form.videoUrl) return
 
-    setTestimonials([...testimonials, form])
+  try {
 
-    setForm({
-      studentName: "",
-      parentName: "",
-      videoUrl: "",
-      description: "",
-      imageUrl: ""
-    })
+    await fetch(
+      "https://coaching-backend.onrender.com/api/testimonials",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(form)
+      }
+    )
 
-    setPreview("")
+  } catch (error) {
+
+    console.error(error)
+
   }
+
+}
 
   const deleteTestimonial = (index: number) => {
     setTestimonials(testimonials.filter((_, i) => i !== index))

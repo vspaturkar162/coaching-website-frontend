@@ -1,6 +1,24 @@
 import { Users, Trophy, Star } from "lucide-react"
-
+import { useEffect, useState } from "react"
+interface StatsData {
+  students: string
+  selections: string
+  experience: string
+  successRate: string
+  courses: string
+  batches: string
+  faculty: string
+}
 export default function Stats() {
+  const [stats, setStats] = useState<StatsData | null>(null)
+  useEffect(() => {
+
+  fetch("https://coaching-backend.onrender.com/api/stats")
+    .then(res => res.json())
+    .then(data => setStats(data))
+    .catch(err => console.error(err))
+
+}, [])
   return (
     <section className="w-full bg-white py-6 px-6">
 
@@ -22,7 +40,7 @@ export default function Stats() {
     </div>
 
     <h3 className="text-xl font-bold text-blue-700">
-      5000+
+      {stats?.students || "0"}+
     </h3>
 
     <p className="text-gray-600 text-xs">
@@ -39,7 +57,7 @@ export default function Stats() {
     </div>
 
     <h3 className="text-xl font-bold text-orange-500">
-      95%
+      {stats?.successRate || "0"}%
     </h3>
 
     <p className="text-gray-600 text-xs">
@@ -56,7 +74,7 @@ export default function Stats() {
     </div>
 
     <h3 className="text-xl font-bold text-green-600">
-      15+ Years
+      {stats?.experience || "0"}+ Years
     </h3>
 
     <p className="text-gray-600 text-xs">
