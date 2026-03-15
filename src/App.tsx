@@ -17,6 +17,7 @@ import DemoLecturesManager from "./admin/pages/DemoLecturesManager"
 import ContactManager from "./admin/pages/ContactManager"
 import FooterManager from "./admin/pages/FooterManager"
 import SettingsPage from "./admin/pages/SettingsPage"
+import EnrollmentsManager from "./admin/pages/EnrollmentsManager"
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
       <Route path="/admin/footer-manager" element={<FooterManager />} />
       <Route path="/admin/courses" element={<CoursesManager />} />
       <Route path="/admin/settings" element={<SettingsPage />} />
+      <Route path="/admin/enrollments" element={<EnrollmentsManager />} />
 
     </Routes>
 

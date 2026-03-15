@@ -10,6 +10,7 @@ import CoursesManager from "./pages/CoursesManager"
 import ContactManager from "./pages/ContactManager"
 import FooterManager from "./pages/FooterManager"
 import SettingsPage from "./pages/SettingsPage"
+import EnrollmentsManager from "./pages/EnrollmentsManager"
 
 export default function AdminApp() {
   return (
@@ -24,6 +25,7 @@ export default function AdminApp() {
       <Route path="/contact" element={<ContactManager />} />
       <Route path="/footer-manager" element={<FooterManager />} />
       <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/enrollments" element={<EnrollmentsManager/>} />
     </Routes>
   )
 }
