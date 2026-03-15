@@ -305,7 +305,7 @@
 
 import { useState, useEffect } from "react"
 import AdminLayout from "../components/AdminLayout"
-import { Upload, Eye, Pencil, Trash } from "lucide-react"
+import { Eye, Pencil, Trash } from "lucide-react"
 
 const API = "https://coaching-website-backend-0nk3.onrender.com/api/courses"
 
@@ -346,13 +346,6 @@ export default function CoursesManager() {
     if (e.target.name === "imageUrl") setPreview(e.target.value)
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return
-    const url = URL.createObjectURL(e.target.files[0])
-    setForm({ ...form, imageUrl: url })
-    setPreview(url)
-  }
-
   const saveCourse = async () => {
     if (!form.name || !form.className) return
 
@@ -363,19 +356,24 @@ export default function CoursesManager() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(form)
         })
+        if (!res.ok) throw new Error("Update failed")
         const updated = await res.json()
         setCourses(prev => prev.map(c => c._id === updated._id ? updated : c))
+        alert("Course updated!")
       } else {
         const res = await fetch(API, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(form)
         })
+        if (!res.ok) throw new Error("Save failed")
         const data = await res.json()
         setCourses(prev => [...prev, data])
+        alert("Course added!")
       }
     } catch (err) {
       console.error("Error saving course:", err)
+      alert("Failed to save course. Check console.")
     }
 
     setForm(emptyForm)
@@ -385,6 +383,7 @@ export default function CoursesManager() {
 
   const deleteCourse = async (course: Course) => {
     if (!course._id) return
+    if (!confirm(`Delete "${course.name}"?`)) return
     try {
       await fetch(`${API}/${course._id}`, { method: "DELETE" })
       setCourses(prev => prev.filter(c => c._id !== course._id))
@@ -397,6 +396,8 @@ export default function CoursesManager() {
     setForm(course)
     setPreview(course.imageUrl)
     setIsEditing(true)
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   return (
@@ -418,11 +419,11 @@ export default function CoursesManager() {
 
         <div className="grid grid-cols-2 gap-6">
           <input name="name" value={form.name} onChange={handleChange}
-            placeholder="Course Name"
+            placeholder="Course Name *"
             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
 
           <input name="className" value={form.className} onChange={handleChange}
-            placeholder="Class (10th / 11th / 12th)"
+            placeholder="Class (10th / 11th / 12th) *"
             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
 
           <input name="exam" value={form.exam} onChange={handleChange}
@@ -438,33 +439,38 @@ export default function CoursesManager() {
             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
 
           <input name="fees" value={form.fees} onChange={handleChange}
-            placeholder="Course Fees"
+            placeholder="Course Fees (e.g. 12000)"
             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
 
           <textarea name="description" value={form.description} onChange={handleChange}
             placeholder="Course Description"
+            rows={3}
             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none col-span-2" />
 
-          <input name="imageUrl" value={form.imageUrl} onChange={handleChange}
-            placeholder="Course Image URL"
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none col-span-2" />
+          {/* URL only — no blob upload */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium text-gray-600 block mb-2">
+              Course Image URL
+            </label>
+            <input name="imageUrl" value={form.imageUrl} onChange={handleChange}
+              placeholder="Paste image URL (e.g. https://example.com/image.jpg)"
+              className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none w-full" />
+            <p className="text-xs text-gray-400 mt-1">
+              Tip: Upload your image to imgbb.com or imgur.com and paste the link here.
+            </p>
+          </div>
         </div>
 
-        {/* IMAGE UPLOAD */}
-        <div className="mt-6">
-          <label className="text-sm font-medium text-gray-600">Upload Course Image</label>
-          <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg h-24 mt-2 cursor-pointer hover:border-blue-500">
-            <div className="flex items-center gap-2 text-gray-500">
-              <Upload size={18} /> Upload Image
-            </div>
-            <input type="file" className="hidden" onChange={handleImageUpload} />
-          </label>
-        </div>
-
+        {/* IMAGE PREVIEW */}
         {preview && (
           <div className="mt-6">
             <p className="text-sm text-gray-600 mb-2">Image Preview</p>
-            <img src={preview} alt="preview" className="h-24 rounded-lg shadow" />
+            <img src={preview} alt="preview"
+              className="h-24 rounded-lg shadow object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none"
+              }}
+            />
           </div>
         )}
 
@@ -486,7 +492,13 @@ export default function CoursesManager() {
 
       {/* COURSE LIST */}
       <div className="rounded-xl shadow p-8 mt-8">
-        <h2 className="text-lg font-semibold mb-6">Available Courses</h2>
+        <h2 className="text-lg font-semibold mb-6">
+          Available Courses ({courses.length})
+        </h2>
+
+        {courses.length === 0 && (
+          <p className="text-gray-400">No courses added yet.</p>
+        )}
 
         <div className="grid grid-cols-3 gap-6">
           {courses.map((course) => (
@@ -494,20 +506,26 @@ export default function CoursesManager() {
               className="border rounded-xl overflow-hidden shadow hover:shadow-lg transition">
 
               {course.imageUrl && (
-                <img src={course.imageUrl} className="h-36 w-full object-cover" />
+                <img src={course.imageUrl} className="h-36 w-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none"
+                  }}
+                />
               )}
 
               <div className="p-4">
                 <h3 className="font-semibold text-lg">{course.name}</h3>
-                <p className="text-sm text-gray-500">Class {course.className}</p>
-                <p className="text-sm text-gray-500">{course.exam}</p>
+                <p className="text-sm text-gray-500">Class: {course.className}</p>
+                <p className="text-sm text-gray-500">Exam: {course.exam}</p>
                 <p className="text-sm text-gray-500">Prof: {course.professor}</p>
                 <p className="text-sm text-gray-500">Duration: {course.duration}</p>
                 <p className="text-blue-600 font-semibold">Fees: ₹{course.fees}</p>
 
                 <div className="flex gap-3 mt-3">
                   <Eye className="text-blue-600 cursor-pointer" size={18}
-                    onClick={() => alert(`${course.name}\n${course.description}`)} />
+                    onClick={() => alert(
+                      `Course: ${course.name}\nClass: ${course.className}\nExam: ${course.exam}\nProfessor: ${course.professor}\nDuration: ${course.duration}\nFees: ₹${course.fees}\n\n${course.description}`
+                    )} />
                   <Pencil className="text-green-600 cursor-pointer" size={18}
                     onClick={() => startEdit(course)} />
                   <Trash className="text-red-600 cursor-pointer" size={18}

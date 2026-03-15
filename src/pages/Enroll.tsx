@@ -305,16 +305,25 @@ interface Course {
 
 export default function Enroll() {
   const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState(true)
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
   const [form, setForm] = useState({ name: "", phone: "", email: "" })
   const [submitting, setSubmitting] = useState(false)
 
-  // Fetch courses from API — reflects admin changes
   useEffect(() => {
     fetch(COURSES_API)
-      .then(res => res.json())
-      .then((data: Course[]) => setCourses(data))
-      .catch(err => console.error("Error loading courses:", err))
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        return res.json()
+      })
+      .then((data: Course[]) => {
+        setCourses(data)
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error("Error loading courses:", err)
+        setLoading(false)
+      })
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -353,7 +362,7 @@ export default function Enroll() {
 
         <div className="max-w-7xl mx-auto grid lg:grid-cols-4 gap-10 px-6">
 
-          {/* SIDEBAR — static content, no changes */}
+          {/* SIDEBAR */}
           <div className="lg:col-span-1 bg-white rounded-2xl shadow-lg p-6 h-fit lg:sticky lg:top-24">
             <h3 className="text-xl font-bold text-blue-900 mb-6">Our Courses</h3>
 
@@ -366,6 +375,7 @@ export default function Enroll() {
                   </div>
                 ))
               ) : (
+                // Fallback sidebar content if no courses saved yet
                 <>
                   <div className="border-b pb-3">
                     <p className="font-semibold">8th Foundation</p>
@@ -418,8 +428,24 @@ export default function Enroll() {
             </div>
           </div>
 
-          {/* COURSE CARDS — now from API */}
+          {/* COURSE CARDS */}
           <div className="lg:col-span-3 grid md:grid-cols-3 gap-8">
+
+            {/* Loading state */}
+            {loading && (
+              <div className="col-span-3 text-center py-12 text-gray-400">
+                Loading courses...
+              </div>
+            )}
+
+            {/* Empty state */}
+            {!loading && courses.length === 0 && (
+              <div className="col-span-3 text-center py-12 text-gray-400">
+                No courses available yet. Please check back soon.
+              </div>
+            )}
+
+            {/* Dynamic course cards from API */}
             {courses.map((course) => (
               <div
                 key={course._id}
@@ -431,29 +457,33 @@ export default function Enroll() {
                     🎓
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-black">{course.name}</h2>
+                    <h2 className="text-xl font-bold text-black">{course.name}</h2>
                     <p className="text-sm font-semibold text-gray-800">
                       {course.exam || "IIT JEE + CBSE + NEET"}
                     </p>
                   </div>
                 </div>
 
-                {/* Schedule */}
+                {/* Details */}
                 <div className="p-6">
                   <div className="border rounded-xl p-4 bg-gray-50">
                     <div className="flex justify-between items-center mb-3">
-                      <h3 className="font-semibold text-gray-800">Class Schedule</h3>
+                      <h3 className="font-semibold text-gray-800">
+                        Class Schedule
+                      </h3>
                       <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
-                        {course.duration || "Batch: P3"}
+                        {course.duration || "Ongoing"}
                       </span>
                     </div>
+
                     <div className="flex items-center gap-2 text-gray-600 mb-2">
                       <Calendar size={16} />
-                      {course.professor || "Saturday"}
+                      {course.professor || "Expert Faculty"}
                     </div>
+
                     <div className="flex items-center gap-2 text-gray-600">
                       <Clock size={16} />
-                      {course.fees ? `Fees: ₹${course.fees}` : "6.00 pm – 9.00 pm"}
+                      {course.fees ? `Fees: ₹${course.fees}` : "Contact for fees"}
                     </div>
                   </div>
                 </div>
