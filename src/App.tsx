@@ -42,7 +42,7 @@ function App() {
       <Route path="/admin/testimonials" element={<TestimonialsManager />} />
       <Route path="/admin/demo" element={<DemoLecturesManager />} />
       <Route path="/admin/contact" element={<ContactManager />} />
-      <Route path="/admin/footer" element={<FooterManager />} />
+      <Route path="/admin/footer-manager" element={<FooterManager />} />
       <Route path="/admin/courses" element={<CoursesManager />} />
       <Route path="/admin/settings" element={<SettingsPage />} />
 

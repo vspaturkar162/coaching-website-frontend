@@ -97,6 +97,7 @@ export default function AdminSidebar({
     { name: "Courses", path: "/admin/courses", icon: BookOpen },
     { name: "Testimonials", path: "/admin/testimonials", icon: MessageSquare },
     { name: "Contact Info", path: "/admin/contact", icon: Phone },
+    { name: "Footer", path: "/admin/footer-manager", icon: Phone },
   ]
 
   return (

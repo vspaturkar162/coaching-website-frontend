@@ -22,7 +22,7 @@ export default function AdminApp() {
       <Route path="/demo" element={<DemoLecturesManager />} />
       <Route path="/courses" element={<CoursesManager />} />
       <Route path="/contact" element={<ContactManager />} />
-      <Route path="/footer" element={<FooterManager />} />
+      <Route path="/footer-manager" element={<FooterManager />} />
       <Route path="/settings" element={<SettingsPage />} />
     </Routes>
   )
