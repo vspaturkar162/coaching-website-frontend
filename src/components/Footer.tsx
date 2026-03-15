@@ -1,13 +1,173 @@
 
+// import { Phone, Mail, Facebook, Instagram, Linkedin, Youtube } from "lucide-react"
+
+// export default function Footer() {
+//   return (
+//     <>
+//       {/* Upper Footer Section */}
+//       <section id="footer" className="bg-sky-100 text-gray-800 py-12 px-6">
+
+//         <div className="max-w-7xl mx-auto grid md:grid-cols-5 gap-10">
+
+//           {/* Course Offerings */}
+//           <div>
+//             <h3 className="font-bold mb-4">COURSE OFFERINGS</h3>
+//             <ul className="space-y-2 text-sm">
+//               <li>LIVE Online Classes</li>
+//               <li>Mentored Learning Program</li>
+//               <li>Recorded Video Courses</li>
+//               <li>CBSE</li>
+//               <li>Microcourses</li>
+//               <li>Crashcourses</li>
+//             </ul>
+//           </div>
+
+//           {/* Classes */}
+//           <div>
+//             <h3 className="font-bold mb-4">CLASSES</h3>
+//             <ul className="space-y-2 text-sm">
+//               <li>Class 8</li>
+//               <li>Class 9</li>
+//               <li>Class 10</li>
+//               <li>Class 11</li>
+//               <li>Class 12</li>
+//             </ul>
+//           </div>
+
+//           {/* Subjects */}
+//           <div>
+//             <h3 className="font-bold mb-4">SUBJECTS</h3>
+//             <ul className="space-y-2 text-sm">
+//               <li>Physics</li>
+//               <li>Math</li>
+//               <li>Chemistry</li>
+//               <li>Biology</li>
+//             </ul>
+//           </div>
+
+//           {/* Info */}
+//           <div>
+//             <h3 className="font-bold mb-4">INFO</h3>
+//             <ul className="space-y-2 text-sm">
+//               <li>About us</li>
+//               <li>Free Class</li>
+//               <li>Parents Orientation</li>
+//             </ul>
+//           </div>
+
+//           {/* Contact + Address */}
+//           <div>
+//             <h3 className="font-bold mb-4">CONTACT US</h3>
+
+//             <div className="space-y-2 text-sm">
+
+//               <p className="flex items-center gap-2">
+//                 <Phone size={14} /> +91 96001 00090
+//               </p>
+
+//               <p className="flex items-center gap-2">
+//                 <Phone size={14} /> +91 96001 00020
+//               </p>
+
+//               <p className="flex items-center gap-2">
+//                 <Mail size={14} /> study@ahaguru.com
+//               </p>
+
+//             </div>
+
+//             {/* Social Icons */}
+//             <div className="flex gap-4 mt-4">
+
+//               <Facebook size={20} className="cursor-pointer hover:text-blue-600"/>
+//               <Instagram size={20} className="cursor-pointer hover:text-pink-600"/>
+//               <Linkedin size={20} className="cursor-pointer hover:text-blue-700"/>
+//               <Youtube size={20} className="cursor-pointer hover:text-red-600"/>
+
+//             </div>
+
+//             {/* Address */}
+//             <div className="mt-4 text-sm">
+//               <p className="font-semibold mb-1">ADDRESS</p>
+//               <p>
+//                 3, Bhim Sena Building Flat 3B, 1st Floor,
+//                 Murrays Gate Rd, Alwarpet,
+//                 Chennai, Tamil Nadu 600018.
+//               </p>
+//             </div>
+
+//           </div>
+
+//         </div>
+
+//       </section>
+
+//       {/* Black Footer (your original one) */}
+//       <footer className="bg-stone-950 text-white w-full px-6 py-6 text-center">
+//         <p>© 2026 Coaching Classes | All Rights Reserved</p>
+//       </footer>
+//     </>
+//   )
+// }
+
+
+import { useEffect, useState } from "react"
 import { Phone, Mail, Facebook, Instagram, Linkedin, Youtube } from "lucide-react"
 
+const API = "https://coaching-website-backend-0nk3.onrender.com/api/footer"
+
+interface FooterData {
+  address: string
+  phone1: string
+  phone2: string
+  email: string
+  instagram: string
+  youtube: string
+  facebook: string
+  linkedin: string
+}
+
+// Fallback defaults shown before data loads
+const defaults: FooterData = {
+  address: "3, Bhim Sena Building Flat 3B, 1st Floor, Murrays Gate Rd, Alwarpet, Chennai, Tamil Nadu 600018.",
+  phone1: "+91 96001 00090",
+  phone2: "+91 96001 00020",
+  email: "study@ahaguru.com",
+  instagram: "",
+  youtube: "",
+  facebook: "",
+  linkedin: ""
+}
+
 export default function Footer() {
+  const [footer, setFooter] = useState<FooterData>(defaults)
+
+  useEffect(() => {
+    fetch(API)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch")
+        return res.json()
+      })
+      .then(data => {
+        // Only override defaults for fields that are actually saved
+        setFooter({
+          address: data.address || defaults.address,
+          phone1: data.phone1 || defaults.phone1,
+          phone2: data.phone2 || defaults.phone2,
+          email: data.email || defaults.email,
+          instagram: data.instagram || "",
+          youtube: data.youtube || "",
+          facebook: data.facebook || "",
+          linkedin: data.linkedin || ""
+        })
+      })
+      .catch(err => console.error("Error loading footer:", err))
+  }, [])
+
   return (
     <>
       {/* Upper Footer Section */}
       <section id="footer" className="bg-sky-100 text-gray-800 py-12 px-6">
-
-        <div className="max-w-7xl mx-auto grid md:grid-cols-5 gap-10">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-10">
 
           {/* Course Offerings */}
           <div>
@@ -55,53 +215,85 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact + Address */}
-          <div>
+          {/* Contact + Address — all dynamic */}
+          <div className="col-span-2 md:col-span-1">
             <h3 className="font-bold mb-4">CONTACT US</h3>
 
             <div className="space-y-2 text-sm">
+              {footer.phone1 && (
+                <p className="flex items-center gap-2">
+                  <Phone size={14} />
+                  <a href={`tel:${footer.phone1}`} className="hover:text-blue-600">
+                    {footer.phone1}
+                  </a>
+                </p>
+              )}
 
-              <p className="flex items-center gap-2">
-                <Phone size={14} /> +91 96001 00090
-              </p>
+              {footer.phone2 && (
+                <p className="flex items-center gap-2">
+                  <Phone size={14} />
+                  <a href={`tel:${footer.phone2}`} className="hover:text-blue-600">
+                    {footer.phone2}
+                  </a>
+                </p>
+              )}
 
-              <p className="flex items-center gap-2">
-                <Phone size={14} /> +91 96001 00020
-              </p>
-
-              <p className="flex items-center gap-2">
-                <Mail size={14} /> study@ahaguru.com
-              </p>
-
+              {footer.email && (
+                <p className="flex items-center gap-2">
+                  <Mail size={14} />
+                  <a href={`mailto:${footer.email}`} className="hover:text-blue-600">
+                    {footer.email}
+                  </a>
+                </p>
+              )}
             </div>
 
-            {/* Social Icons */}
+            {/* Social Icons — clickable if link saved */}
             <div className="flex gap-4 mt-4">
+              {footer.facebook ? (
+                <a href={footer.facebook} target="_blank" rel="noopener noreferrer">
+                  <Facebook size={20} className="cursor-pointer hover:text-blue-600" />
+                </a>
+              ) : (
+                <Facebook size={20} className="cursor-pointer hover:text-blue-600" />
+              )}
 
-              <Facebook size={20} className="cursor-pointer hover:text-blue-600"/>
-              <Instagram size={20} className="cursor-pointer hover:text-pink-600"/>
-              <Linkedin size={20} className="cursor-pointer hover:text-blue-700"/>
-              <Youtube size={20} className="cursor-pointer hover:text-red-600"/>
+              {footer.instagram ? (
+                <a href={footer.instagram} target="_blank" rel="noopener noreferrer">
+                  <Instagram size={20} className="cursor-pointer hover:text-pink-600" />
+                </a>
+              ) : (
+                <Instagram size={20} className="cursor-pointer hover:text-pink-600" />
+              )}
 
+              {footer.linkedin ? (
+                <a href={footer.linkedin} target="_blank" rel="noopener noreferrer">
+                  <Linkedin size={20} className="cursor-pointer hover:text-blue-700" />
+                </a>
+              ) : (
+                <Linkedin size={20} className="cursor-pointer hover:text-blue-700" />
+              )}
+
+              {footer.youtube ? (
+                <a href={footer.youtube} target="_blank" rel="noopener noreferrer">
+                  <Youtube size={20} className="cursor-pointer hover:text-red-600" />
+                </a>
+              ) : (
+                <Youtube size={20} className="cursor-pointer hover:text-red-600" />
+              )}
             </div>
 
             {/* Address */}
             <div className="mt-4 text-sm">
               <p className="font-semibold mb-1">ADDRESS</p>
-              <p>
-                3, Bhim Sena Building Flat 3B, 1st Floor,
-                Murrays Gate Rd, Alwarpet,
-                Chennai, Tamil Nadu 600018.
-              </p>
+              <p>{footer.address}</p>
             </div>
-
           </div>
 
         </div>
-
       </section>
 
-      {/* Black Footer (your original one) */}
+      {/* Black Footer */}
       <footer className="bg-stone-950 text-white w-full px-6 py-6 text-center">
         <p>© 2026 Coaching Classes | All Rights Reserved</p>
       </footer>
