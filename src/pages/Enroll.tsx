@@ -283,30 +283,46 @@
 // }
 
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { X, Calendar, Clock } from "lucide-react"
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 
-const API = "https://coaching-website-backend-0nk3.onrender.com/api/enrollments"
+const COURSES_API = "https://coaching-website-backend-0nk3.onrender.com/api/courses"
+const ENROLL_API  = "https://coaching-website-backend-0nk3.onrender.com/api/enrollments"
+
+interface Course {
+  _id?: string
+  name: string
+  description: string
+  className: string
+  exam: string
+  professor: string
+  duration: string
+  fees: string
+  imageUrl: string
+}
 
 export default function Enroll() {
-
-  const courses = [
-    "8th Foundation", "9th Foundation",
-    "10th SSC", "11th Science", "12th Science"
-  ]
-
+  const [courses, setCourses] = useState<Course[]>([])
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
   const [form, setForm] = useState({ name: "", phone: "", email: "" })
   const [submitting, setSubmitting] = useState(false)
+
+  // Fetch courses from API — reflects admin changes
+  useEffect(() => {
+    fetch(COURSES_API)
+      .then(res => res.json())
+      .then((data: Course[]) => setCourses(data))
+      .catch(err => console.error("Error loading courses:", err))
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
 
     try {
-      const res = await fetch(API, {
+      const res = await fetch(ENROLL_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, course: selectedCourse })
@@ -337,31 +353,42 @@ export default function Enroll() {
 
         <div className="max-w-7xl mx-auto grid lg:grid-cols-4 gap-10 px-6">
 
-          {/* SIDEBAR */}
+          {/* SIDEBAR — static content, no changes */}
           <div className="lg:col-span-1 bg-white rounded-2xl shadow-lg p-6 h-fit lg:sticky lg:top-24">
             <h3 className="text-xl font-bold text-blue-900 mb-6">Our Courses</h3>
 
             <div className="space-y-4 text-sm text-gray-700">
-              <div className="border-b pb-3">
-                <p className="font-semibold">8th Foundation</p>
-                <p className="text-gray-500">Basic Science & Math Concepts</p>
-              </div>
-              <div className="border-b pb-3">
-                <p className="font-semibold">9th Foundation</p>
-                <p className="text-gray-500">Strong Board Preparation</p>
-              </div>
-              <div className="border-b pb-3">
-                <p className="font-semibold">10th SSC</p>
-                <p className="text-gray-500">Board Exam Excellence</p>
-              </div>
-              <div className="border-b pb-3">
-                <p className="font-semibold">11th Science</p>
-                <p className="text-gray-500">Physics • Chemistry • Maths</p>
-              </div>
-              <div className="pb-3">
-                <p className="font-semibold">12th Science</p>
-                <p className="text-gray-500">Board + Competitive Exams</p>
-              </div>
+              {courses.length > 0 ? (
+                courses.map(course => (
+                  <div key={course._id} className="border-b pb-3 last:border-b-0">
+                    <p className="font-semibold">{course.name}</p>
+                    <p className="text-gray-500">{course.description || course.exam}</p>
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div className="border-b pb-3">
+                    <p className="font-semibold">8th Foundation</p>
+                    <p className="text-gray-500">Basic Science & Math Concepts</p>
+                  </div>
+                  <div className="border-b pb-3">
+                    <p className="font-semibold">9th Foundation</p>
+                    <p className="text-gray-500">Strong Board Preparation</p>
+                  </div>
+                  <div className="border-b pb-3">
+                    <p className="font-semibold">10th SSC</p>
+                    <p className="text-gray-500">Board Exam Excellence</p>
+                  </div>
+                  <div className="border-b pb-3">
+                    <p className="font-semibold">11th Science</p>
+                    <p className="text-gray-500">Physics • Chemistry • Maths</p>
+                  </div>
+                  <div className="pb-3">
+                    <p className="font-semibold">12th Science</p>
+                    <p className="text-gray-500">Board + Competitive Exams</p>
+                  </div>
+                </>
+              )}
             </div>
 
             <h3 className="text-xl font-bold text-blue-900 mt-8 mb-4">Expert Faculty</h3>
@@ -391,43 +418,52 @@ export default function Enroll() {
             </div>
           </div>
 
-          {/* COURSE CARDS */}
+          {/* COURSE CARDS — now from API */}
           <div className="lg:col-span-3 grid md:grid-cols-3 gap-8">
-            {courses.map((course, i) => (
-              <div key={i}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition">
-
+            {courses.map((course) => (
+              <div
+                key={course._id}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition"
+              >
+                {/* Header */}
                 <div className="bg-gradient-to-r from-orange-500 to-yellow-400 p-6 flex items-center gap-4">
                   <div className="bg-white w-14 h-14 rounded-full flex items-center justify-center text-2xl">
                     🎓
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-black">{course}</h2>
-                    <p className="text-sm font-semibold text-gray-800">IIT JEE + CBSE + NEET</p>
+                    <h2 className="text-2xl font-bold text-black">{course.name}</h2>
+                    <p className="text-sm font-semibold text-gray-800">
+                      {course.exam || "IIT JEE + CBSE + NEET"}
+                    </p>
                   </div>
                 </div>
 
+                {/* Schedule */}
                 <div className="p-6">
                   <div className="border rounded-xl p-4 bg-gray-50">
                     <div className="flex justify-between items-center mb-3">
                       <h3 className="font-semibold text-gray-800">Class Schedule</h3>
                       <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
-                        Batch: P3
+                        {course.duration || "Batch: P3"}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 mb-2">
-                      <Calendar size={16} /> Saturday
+                      <Calendar size={16} />
+                      {course.professor || "Saturday"}
                     </div>
                     <div className="flex items-center gap-2 text-gray-600">
-                      <Clock size={16} /> 6.00 pm – 9.00 pm
+                      <Clock size={16} />
+                      {course.fees ? `Fees: ₹${course.fees}` : "6.00 pm – 9.00 pm"}
                     </div>
                   </div>
                 </div>
 
+                {/* Enroll Button */}
                 <div className="border-t p-4 text-center">
                   <button
-                    onClick={() => setSelectedCourse(course)}
-                    className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-2 rounded-full shadow hover:scale-105 transition">
+                    onClick={() => setSelectedCourse(course.name)}
+                    className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-2 rounded-full shadow hover:scale-105 transition"
+                  >
                     Enroll Now
                   </button>
                 </div>
@@ -443,7 +479,8 @@ export default function Enroll() {
 
               <button
                 onClick={() => setSelectedCourse(null)}
-                className="absolute right-4 top-4 text-gray-500 hover:text-red-500">
+                className="absolute right-4 top-4 text-gray-500 hover:text-red-500"
+              >
                 <X size={22} />
               </button>
 
