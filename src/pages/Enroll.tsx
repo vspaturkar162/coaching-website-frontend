@@ -289,7 +289,7 @@ import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 
 const COURSES_API = "https://coaching-website-backend-0nk3.onrender.com/api/courses"
-const ENROLL_API  = "https://coaching-website-backend-0nk3.onrender.com/api/enrollments"
+// const ENROLL_API  = "https://coaching-website-backend-0nk3.onrender.com/api/enrollments"
 
 interface Course {
   _id?: string
@@ -322,7 +322,7 @@ export default function Enroll() {
     setSubmitting(true)
 
     try {
-      const res = await fetch(ENROLL_API, {
+      const res = await fetch(COURSES_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, course: selectedCourse })
