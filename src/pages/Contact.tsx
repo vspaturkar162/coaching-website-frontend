@@ -174,9 +174,15 @@ export default function Contact() {
 
   useEffect(() => {
     fetch(API)
-      .then(res => res.json())
-      .then(data => setContact(data))
-      .catch(err => console.error("Error loading contact:", err))
+      .then(res => {
+      console.log("Status:", res.status)  // should be 200
+      return res.json()
+    })
+    .then(data => {
+      console.log("Contact data:", data)  // should show your saved data
+      setContact(data)
+    })
+    .catch(err => console.error("Error:", err))
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
