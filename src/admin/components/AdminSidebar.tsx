@@ -75,9 +75,10 @@ import {
   Phone,
   Settings,
   LogOut,
-  Menu
+  Menu,
+  Stamp
 } from "lucide-react"
-import Footer from "../../components/Footer"
+// import Footer from "../../components/Footer"
 
 interface SidebarProps {
   sidebarOpen: boolean
@@ -98,7 +99,7 @@ export default function AdminSidebar({
     { name: "Courses", path: "/admin/courses", icon: BookOpen },
     { name: "Testimonials", path: "/admin/testimonials", icon: MessageSquare },
     { name: "Contact Info", path: "/admin/contact", icon: Phone },
-    { name: "Footer", path: "/admin/footer-manager", icon: Footer },
+    { name: "Footer", path: "/admin/footer-manager", icon: Stamp },
   ]
 
   return (
