@@ -1,315 +1,39 @@
-// import { useState } from "react"
-// import AdminLayout from "../components/AdminLayout"
-// import { Phone, Mail, MapPin, Globe } from "lucide-react"
-
-// interface Contact {
-//   instituteName: string
-//   phone: string
-//   email: string
-//   whatsapp: string
-//   website: string
-//   address: string
-//   mapLink: string
-//   instagram: string
-//   facebook: string
-//   youtube: string
-// }
-
-// export default function ContactManager() {
-
-//   const [contact, setContact] = useState<Contact>({
-//     instituteName: "",
-//     phone: "",
-//     email: "",
-//     whatsapp: "",
-//     website: "",
-//     address: "",
-//     mapLink: "",
-//     instagram: "",
-//     facebook: "",
-//     youtube: ""
-//   })
-
-//   const handleChange = (
-//     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-//   ) => {
-//     setContact({ ...contact, [e.target.name]: e.target.value })
-//   }
-
-//   return (
-//     <AdminLayout>
-
-//       {/* HEADER */}
-//       <div className="bg-gradient-to-r from-white to-blue-100 p-4 rounded-lg">
-//         <h1 className="text-3xl font-bold text-gray-800">
-//           Contact Manager
-//         </h1>
-//         <p className="text-gray-500">
-//           Manage your institute contact details and address information.
-//         </p>
-//       </div>
-
-
-//       {/* FORM */}
-//       <div className="rounded-xl shadow p-8 mt-6">
-
-//         <h2 className="text-lg font-semibold mb-6">
-//           Contact Information
-//         </h2>
-
-//         <div className="grid grid-cols-2 gap-6">
-
-//           <input
-//             name="instituteName"
-//             value={contact.instituteName}
-//             onChange={handleChange}
-//             placeholder="Institute Name"
-//             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-//           />
-
-//           <input
-//             name="phone"
-//             value={contact.phone}
-//             onChange={handleChange}
-//             placeholder="Mobile Number"
-//             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-//           />
-
-//           <input
-//             name="email"
-//             value={contact.email}
-//             onChange={handleChange}
-//             placeholder="Email Address"
-//             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-//           />
-
-//           <input
-//             name="whatsapp"
-//             value={contact.whatsapp}
-//             onChange={handleChange}
-//             placeholder="WhatsApp Number"
-//             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-//           />
-
-//           <input
-//             name="website"
-//             value={contact.website}
-//             onChange={handleChange}
-//             placeholder="Website URL"
-//             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-//           />
-
-//           <input
-//             name="mapLink"
-//             value={contact.mapLink}
-//             onChange={handleChange}
-//             placeholder="Google Maps Location Link"
-//             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-//           />
-
-//           <textarea
-//             name="address"
-//             value={contact.address}
-//             onChange={handleChange}
-//             placeholder="Full Address"
-//             className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none col-span-2"
-//           />
-
-//         </div>
-
-
-//         {/* SOCIAL MEDIA */}
-//         <div className="mt-8">
-
-//           <h3 className="font-semibold mb-4">
-//             Social Media Links
-//           </h3>
-
-//           <div className="grid grid-cols-3 gap-6">
-
-//             <input
-//               name="instagram"
-//               value={contact.instagram}
-//               onChange={handleChange}
-//               placeholder="Instagram Link"
-//               className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-//             />
-
-//             <input
-//               name="facebook"
-//               value={contact.facebook}
-//               onChange={handleChange}
-//               placeholder="Facebook Link"
-//               className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-//             />
-
-//             <input
-//               name="youtube"
-//               value={contact.youtube}
-//               onChange={handleChange}
-//               placeholder="YouTube Channel"
-//               className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-//             />
-
-//           </div>
-
-//         </div>
-
-
-//         {/* BUTTON */}
-//         <button
-//           className="mt-8 bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 text-white px-6 py-2 rounded-lg"
-//         >
-//           Update Contact Information
-//         </button>
-
-//       </div>
-
-
-//       {/* PREVIEW PANEL */}
-//       <div className=" rounded-xl shadow p-8 mt-8">
-
-//         <h2 className="text-lg font-semibold mb-6">
-//           Contact Preview
-//         </h2>
-
-//         <div className="grid grid-cols-3 gap-6">
-
-//           <div className="flex items-center gap-3">
-//             <Phone className="text-blue-600"/>
-//             <div>
-//               <p className="font-semibold">Phone</p>
-//               <p className="text-gray-500">{contact.phone || "-"}</p>
-//             </div>
-//           </div>
-
-//           <div className="flex items-center gap-3">
-//             <Mail className="text-blue-600"/>
-//             <div>
-//               <p className="font-semibold">Email</p>
-//               <p className="text-gray-500">{contact.email || "-"}</p>
-//             </div>
-//           </div>
-
-//           <div className="flex items-center gap-3">
-//             <Globe className="text-blue-600"/>
-//             <div>
-//               <p className="font-semibold">Website</p>
-//               <p className="text-gray-500">{contact.website || "-"}</p>
-//             </div>
-//           </div>
-
-//           <div className="flex items-center gap-3 col-span-3">
-//             <MapPin className="text-blue-600"/>
-//             <div>
-//               <p className="font-semibold">Address</p>
-//               <p className="text-gray-500">{contact.address || "-"}</p>
-//             </div>
-//           </div>
-
-//         </div>
-
-//       </div>
-
-//     </AdminLayout>
-//   )
-// }
-
-
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import AdminLayout from "../components/AdminLayout"
-import { Upload, Eye, Pencil, Trash } from "lucide-react"
+import { Phone, Mail, MapPin, Globe } from "lucide-react"
 
-const API = "https://coaching-website-backend-0nk3.onrender.com/api/courses"
-
-interface Course {
-  _id?: string
-  name: string
-  description: string
-  className: string
-  exam: string
-  professor: string
-  duration: string
-  fees: string
-  imageUrl: string
+interface Contact {
+  instituteName: string
+  phone: string
+  email: string
+  whatsapp: string
+  website: string
+  address: string
+  mapLink: string
+  instagram: string
+  facebook: string
+  youtube: string
 }
 
-const emptyForm: Course = {
-  name: "", description: "", className: "",
-  exam: "", professor: "", duration: "", fees: "", imageUrl: ""
-}
+export default function ContactManager() {
 
-export default function CoursesManager() {
-  const [courses, setCourses] = useState<Course[]>([])
-  const [form, setForm] = useState<Course>(emptyForm)
-  const [preview, setPreview] = useState("")
-  const [isEditing, setIsEditing] = useState(false)
-
-  useEffect(() => {
-    fetch(API)
-      .then(res => res.json())
-      .then(data => setCourses(data))
-      .catch(err => console.error("Error loading courses:", err))
-  }, [])
+  const [contact, setContact] = useState<Contact>({
+    instituteName: "",
+    phone: "",
+    email: "",
+    whatsapp: "",
+    website: "",
+    address: "",
+    mapLink: "",
+    instagram: "",
+    facebook: "",
+    youtube: ""
+  })
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-    if (e.target.name === "imageUrl") setPreview(e.target.value)
-  }
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return
-    const url = URL.createObjectURL(e.target.files[0])
-    setForm({ ...form, imageUrl: url })
-    setPreview(url)
-  }
-
-  const saveCourse = async () => {
-    if (!form.name || !form.className) return
-
-    try {
-      if (isEditing && form._id) {
-        const res = await fetch(`${API}/${form._id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form)
-        })
-        const updated = await res.json()
-        setCourses(prev => prev.map(c => c._id === updated._id ? updated : c))
-      } else {
-        const res = await fetch(API, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form)
-        })
-        const data = await res.json()
-        setCourses(prev => [...prev, data])
-      }
-    } catch (err) {
-      console.error("Error saving course:", err)
-    }
-
-    setForm(emptyForm)
-    setPreview("")
-    setIsEditing(false)
-  }
-
-  const deleteCourse = async (course: Course) => {
-    if (!course._id) return
-    try {
-      await fetch(`${API}/${course._id}`, { method: "DELETE" })
-      setCourses(prev => prev.filter(c => c._id !== course._id))
-    } catch (err) {
-      console.error("Error deleting course:", err)
-    }
-  }
-
-  const startEdit = (course: Course) => {
-    setForm(course)
-    setPreview(course.imageUrl)
-    setIsEditing(true)
+    setContact({ ...contact, [e.target.name]: e.target.value })
   }
 
   return (
@@ -317,121 +41,178 @@ export default function CoursesManager() {
 
       {/* HEADER */}
       <div className="bg-gradient-to-r from-white to-blue-100 p-4 rounded-lg">
-        <h1 className="text-3xl font-bold text-gray-800">Courses Manager</h1>
+        <h1 className="text-3xl font-bold text-gray-800">
+          Contact Manager
+        </h1>
         <p className="text-gray-500">
-          Add and manage courses offered by your coaching institute.
+          Manage your institute contact details and address information.
         </p>
       </div>
 
-      {/* ADD / EDIT FORM */}
+
+      {/* FORM */}
       <div className="rounded-xl shadow p-8 mt-6">
+
         <h2 className="text-lg font-semibold mb-6">
-          {isEditing ? "Edit Course" : "Add New Course"}
+          Contact Information
         </h2>
 
         <div className="grid grid-cols-2 gap-6">
-          <input name="name" value={form.name} onChange={handleChange}
-            placeholder="Course Name"
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
 
-          <input name="className" value={form.className} onChange={handleChange}
-            placeholder="Class (10th / 11th / 12th)"
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+          <input
+            name="instituteName"
+            value={contact.instituteName}
+            onChange={handleChange}
+            placeholder="Institute Name"
+            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
 
-          <input name="exam" value={form.exam} onChange={handleChange}
-            placeholder="Exam (JEE / NEET / Boards)"
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+          <input
+            name="phone"
+            value={contact.phone}
+            onChange={handleChange}
+            placeholder="Mobile Number"
+            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
 
-          <input name="professor" value={form.professor} onChange={handleChange}
-            placeholder="Assigned Professor"
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+          <input
+            name="email"
+            value={contact.email}
+            onChange={handleChange}
+            placeholder="Email Address"
+            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
 
-          <input name="duration" value={form.duration} onChange={handleChange}
-            placeholder="Course Duration (e.g. 6 months)"
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+          <input
+            name="whatsapp"
+            value={contact.whatsapp}
+            onChange={handleChange}
+            placeholder="WhatsApp Number"
+            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
 
-          <input name="fees" value={form.fees} onChange={handleChange}
-            placeholder="Course Fees"
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+          <input
+            name="website"
+            value={contact.website}
+            onChange={handleChange}
+            placeholder="Website URL"
+            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
 
-          <textarea name="description" value={form.description} onChange={handleChange}
-            placeholder="Course Description"
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none col-span-2" />
+          <input
+            name="mapLink"
+            value={contact.mapLink}
+            onChange={handleChange}
+            placeholder="Google Maps Location Link"
+            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
 
-          <input name="imageUrl" value={form.imageUrl} onChange={handleChange}
-            placeholder="Course Image URL"
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none col-span-2" />
+          <textarea
+            name="address"
+            value={contact.address}
+            onChange={handleChange}
+            placeholder="Full Address"
+            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none col-span-2"
+          />
+
         </div>
 
-        {/* IMAGE UPLOAD */}
-        <div className="mt-6">
-          <label className="text-sm font-medium text-gray-600">Upload Course Image</label>
-          <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg h-24 mt-2 cursor-pointer hover:border-blue-500">
-            <div className="flex items-center gap-2 text-gray-500">
-              <Upload size={18} /> Upload Image
-            </div>
-            <input type="file" className="hidden" onChange={handleImageUpload} />
-          </label>
-        </div>
 
-        {preview && (
-          <div className="mt-6">
-            <p className="text-sm text-gray-600 mb-2">Image Preview</p>
-            <img src={preview} alt="preview" className="h-24 rounded-lg shadow" />
+        {/* SOCIAL MEDIA */}
+        <div className="mt-8">
+
+          <h3 className="font-semibold mb-4">
+            Social Media Links
+          </h3>
+
+          <div className="grid grid-cols-3 gap-6">
+
+            <input
+              name="instagram"
+              value={contact.instagram}
+              onChange={handleChange}
+              placeholder="Instagram Link"
+              className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+
+            <input
+              name="facebook"
+              value={contact.facebook}
+              onChange={handleChange}
+              placeholder="Facebook Link"
+              className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+
+            <input
+              name="youtube"
+              value={contact.youtube}
+              onChange={handleChange}
+              placeholder="YouTube Channel"
+              className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+
           </div>
-        )}
 
-        <div className="flex gap-3 mt-6">
-          <button onClick={saveCourse}
-            className="bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 text-white px-6 py-2 rounded-lg">
-            {isEditing ? "Update Course" : "Add Course"}
-          </button>
-
-          {isEditing && (
-            <button
-              onClick={() => { setForm(emptyForm); setPreview(""); setIsEditing(false) }}
-              className="border border-gray-300 text-gray-600 px-6 py-2 rounded-lg">
-              Cancel
-            </button>
-          )}
         </div>
+
+
+        {/* BUTTON */}
+        <button
+          className="mt-8 bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 text-white px-6 py-2 rounded-lg"
+        >
+          Update Contact Information
+        </button>
+
       </div>
 
-      {/* COURSE LIST */}
-      <div className="rounded-xl shadow p-8 mt-8">
-        <h2 className="text-lg font-semibold mb-6">Available Courses</h2>
+
+      {/* PREVIEW PANEL */}
+      <div className=" rounded-xl shadow p-8 mt-8">
+
+        <h2 className="text-lg font-semibold mb-6">
+          Contact Preview
+        </h2>
 
         <div className="grid grid-cols-3 gap-6">
-          {courses.map((course) => (
-            <div key={course._id}
-              className="border rounded-xl overflow-hidden shadow hover:shadow-lg transition">
 
-              {course.imageUrl && (
-                <img src={course.imageUrl} className="h-36 w-full object-cover" />
-              )}
-
-              <div className="p-4">
-                <h3 className="font-semibold text-lg">{course.name}</h3>
-                <p className="text-sm text-gray-500">Class {course.className}</p>
-                <p className="text-sm text-gray-500">{course.exam}</p>
-                <p className="text-sm text-gray-500">Prof: {course.professor}</p>
-                <p className="text-sm text-gray-500">Duration: {course.duration}</p>
-                <p className="text-blue-600 font-semibold">Fees: ₹{course.fees}</p>
-
-                <div className="flex gap-3 mt-3">
-                  <Eye className="text-blue-600 cursor-pointer" size={18}
-                    onClick={() => alert(`${course.name}\n${course.description}`)} />
-                  <Pencil className="text-green-600 cursor-pointer" size={18}
-                    onClick={() => startEdit(course)} />
-                  <Trash className="text-red-600 cursor-pointer" size={18}
-                    onClick={() => deleteCourse(course)} />
-                </div>
-              </div>
+          <div className="flex items-center gap-3">
+            <Phone className="text-blue-600"/>
+            <div>
+              <p className="font-semibold">Phone</p>
+              <p className="text-gray-500">{contact.phone || "-"}</p>
             </div>
-          ))}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Mail className="text-blue-600"/>
+            <div>
+              <p className="font-semibold">Email</p>
+              <p className="text-gray-500">{contact.email || "-"}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Globe className="text-blue-600"/>
+            <div>
+              <p className="font-semibold">Website</p>
+              <p className="text-gray-500">{contact.website || "-"}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 col-span-3">
+            <MapPin className="text-blue-600"/>
+            <div>
+              <p className="font-semibold">Address</p>
+              <p className="text-gray-500">{contact.address || "-"}</p>
+            </div>
+          </div>
+
         </div>
+
       </div>
 
     </AdminLayout>
   )
 }
+
+
